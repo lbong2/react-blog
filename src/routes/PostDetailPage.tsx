@@ -7,6 +7,7 @@ import { GiscusWidget } from '../components/GiscusWidget';
 import { PostCard } from '../components/PostCard';
 import { PostMeta } from '../components/PostMeta';
 import { PostToc } from '../components/PostToc';
+import { AdsenseSlot } from '../components/ads/AdsenseSlot';
 import { useLayoutAside } from '../contexts/LayoutAsideContext';
 import { filterPosts, getPostBySlug } from '../lib/posts';
 
@@ -87,6 +88,8 @@ export const PostDetailPage = () => {
           ))}
         </div>
       )}
+
+      <AdsenseSlot slotKey="postBottom" className="rounded-3xl border border-slate-200 bg-white shadow-card p-4" />
 
       <GiscusWidget />
 

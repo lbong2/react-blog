@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { CategoryFilter } from '../components/CategoryFilter';
 import { EmptyState } from '../components/EmptyState';
 import { PostCard } from '../components/PostCard';
+import { AdsenseSlot } from '../components/ads/AdsenseSlot';
 import { siteConfig } from '../config/siteConfig';
 import { useSearch } from '../contexts/SearchContext';
 import { filterPosts, getAllPosts, getCategoryMap } from '../lib/posts';
@@ -50,6 +51,8 @@ export const HomePage = () => {
           현재 {allPosts.length}개의 포스트가 등록되어 있어요
         </p>
       </section>
+
+      <AdsenseSlot slotKey="homeHero" className="rounded-3xl border border-slate-200 bg-white shadow-card p-4" />
 
       <section className="space-y-6">
         <header className="flex flex-col gap-2">

@@ -58,6 +58,14 @@ export const siteConfig: SiteConfig = {
     // GitHub Pages base 경로. 사용자 페이지라면 '/' 로 두세요.
     basePath: '/react-blog/',
   },
+  adsense: {
+    enabled: true,
+    clientId: 'ca-pub-8919104066540378',
+    slots: {
+      homeHero: 'YOUR_HOME_SLOT_ID',
+      postBottom: 'YOUR_POST_SLOT_ID',
+    },
+  },
   giscus: {
     enabled: false,
     repo: 'your-github-id/react-blog',

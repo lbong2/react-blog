@@ -77,5 +77,6 @@ readingTime: 8           # (선택) 직접 지정 가능, 없으면 자동 계�
 - **다크 모드**: `tailwind.config.js`에서 `darkMode: 'class'`를 활성화하고, 헤더에 토글을 추가하세요.
 - **검색 고도화**: 현재는 간단한 필터 방식입니다. 대규모 컨텐츠라면 `lunr`나 `MiniSearch` 등을 붙여 인덱스를 생성할 수 있습니다.
 - **콘텐츠 위치 변경**: 마크다운을 다른 폴더로 옮기면 `src/lib/posts.ts`의 `import.meta.glob` 경로도 함께 수정해야 합니다.
+- **광고 (Google AdSense)**: `src/config/siteConfig.ts`의 `adsense.slots`에 실제 광고 슬롯 ID를 입력하고, 필요에 따라 `AdsenseSlot` 컴포넌트를 다른 위치에 배치하세요. 기본 스크립트는 `index.html`에 포함되어 있습니다.
 
 필요한 기능이나 개선 아이디어가 있다면 자유롭게 확장해 주세요. 즐거운 블로깅 되세요!
