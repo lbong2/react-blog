@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color: #0f172a;
+    background-color: #f6f8fb;
+    font-family: 'Inter', 'Pretendard Variable', system-ui, sans-serif;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+}
+
+@layer components {
+  .card-surface {
+    @apply rounded-2xl border border-slate-200 bg-white shadow-card transition hover:-translate-y-0.5 hover:shadow-xl;
+  }
+
+  .tag-pill {
+    @apply inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand hover:bg-brand-subtle hover:text-brand-dark;
+  }
+
+  .prose-custom {
+    @apply prose max-w-none prose-headings:font-display prose-headings:text-slate-900 prose-p:text-slate-700 prose-a:text-brand prose-pre:bg-slate-900 prose-code:font-mono;
+  }
+}

@@ -1,0 +1,138 @@
+import { Buffer } from 'buffer';
+import matter from 'gray-matter';
+import { marked } from 'marked';
+
+if (typeof globalThis !== 'undefined' && !(globalThis as any).Buffer) {
+  // gray-matter expects Node's Buffer even in browser builds
+  (globalThis as any).Buffer = Buffer;
+}
+
+import type { CategoryMap, Post, PostFrontMatter } from '../types/post';
+
+const markdownModules = import.meta.glob('../content/posts/**/*.md', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+});
+
+const normalizeTags = (tags?: string[] | string): string[] => {
+  if (!tags) return [];
+  return Array.isArray(tags) ? tags : tags.split(',').map((tag) => tag.trim());
+};
+
+const ensureFrontMatter = (data: Record<string, unknown>): PostFrontMatter => {
+  const frontMatter = data as Partial<PostFrontMatter>;
+
+  if (!frontMatter.title) {
+    throw new Error('Post is missing a title');
+  }
+
+  if (!frontMatter.date) {
+    throw new Error(`Post "${frontMatter.title}" is missing a publish date`);
+  }
+
+  if (!frontMatter.category || !frontMatter.subcategory) {
+    throw new Error(
+      `Post "${frontMatter.title}" must include both category and subcategory fields`
+    );
+  }
+
+  return {
+    title: frontMatter.title,
+    date: frontMatter.date,
+    excerpt: frontMatter.excerpt,
+    tags: normalizeTags(frontMatter.tags as string[] | string | undefined),
+    category: frontMatter.category,
+    subcategory: frontMatter.subcategory,
+    heroImage: frontMatter.heroImage,
+    readingTime: frontMatter.readingTime,
+    draft: frontMatter.draft ?? false,
+  };
+};
+
+const estimateReadingTime = (wordCount: number): number =>
+  Math.max(1, Math.round(wordCount / 200));
+
+const removePrefix = (path: string) =>
+  path.replace('../content/posts/', '').replace('.md', '');
+
+export const posts: Post[] = Object.entries(markdownModules)
+  .map(([path, fileContents]) => {
+    const { data, content } = matter(fileContents as string);
+    const frontMatter = ensureFrontMatter(data);
+    const slug = removePrefix(path).split('/').pop() ?? path;
+    const html = marked.parse(content) as string;
+    const wordCount = content.split(/\s+/).length;
+
+    return {
+      ...frontMatter,
+      slug,
+      content: html,
+      wordCount,
+      isoDate: new Date(frontMatter.date).toISOString(),
+      tags: frontMatter.tags ?? [],
+      readingTime: frontMatter.readingTime ?? estimateReadingTime(wordCount),
+    };
+  })
+  .filter((post) => !post.draft)
+  .sort(
+    (a, b) =>
+      new Date(b.isoDate).getTime() - new Date(a.isoDate).getTime()
+  );
+
+export const getAllPosts = () => posts;
+
+export const getPostBySlug = (slug: string) =>
+  posts.find((post) => post.slug === slug);
+
+export const getAllTags = () => {
+  const tagSet = new Set<string>();
+  posts.forEach((post) => post.tags.forEach((tag) => tagSet.add(tag)));
+  return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
+};
+
+export const getCategoryMap = (): CategoryMap => {
+  const map: CategoryMap = {};
+  posts.forEach(({ category, subcategory }) => {
+    if (!map[category]) {
+      map[category] = [];
+    }
+    if (!map[category].includes(subcategory)) {
+      map[category].push(subcategory);
+    }
+  });
+  Object.keys(map).forEach((key) =>
+    map[key].sort((a, b) => a.localeCompare(b))
+  );
+  return map;
+};
+
+export const filterPosts = ({
+  query,
+  category,
+  subcategory,
+  tag,
+}: {
+  query?: string;
+  category?: string;
+  subcategory?: string;
+  tag?: string;
+}) => {
+  const normalizedQuery = query?.trim().toLowerCase();
+
+  return posts.filter((post) => {
+    const matchesQuery = normalizedQuery
+      ? post.title.toLowerCase().includes(normalizedQuery) ||
+        post.excerpt?.toLowerCase().includes(normalizedQuery) ||
+        post.tags.some((t) => t.toLowerCase().includes(normalizedQuery))
+      : true;
+
+    const matchesCategory = category ? post.category === category : true;
+    const matchesSubcategory = subcategory
+      ? post.subcategory === subcategory
+      : true;
+    const matchesTag = tag ? post.tags.includes(tag) : true;
+
+    return matchesQuery && matchesCategory && matchesSubcategory && matchesTag;
+  });
+};
