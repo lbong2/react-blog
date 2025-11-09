@@ -1,7 +1,6 @@
 import { Buffer } from 'buffer';
 import matter from 'gray-matter';
 import { marked } from 'marked';
-import type { Tokens } from 'marked';
 
 type GlobalWithBuffer = typeof globalThis & {
   Buffer?: typeof Buffer;
@@ -117,13 +116,12 @@ const renderMarkdownWithHeadings = (content: string) => {
   const renderer = new marked.Renderer();
   const originalHeading = renderer.heading?.bind(renderer);
 
-  renderer.heading = function headingRenderer(token: Tokens.Heading) {
-    const plainText = toPlainText(token?.text ?? token?.raw ?? '');
-    const depth = token?.depth ?? 1;
+  renderer.heading = (text = '', level, raw, sluggerParam) => {
+    const plainText = toPlainText(text);
     const id = slugger(plainText);
-    headings.push({ id, text: plainText, level: depth });
+    headings.push({ id, text: plainText, level });
     if (originalHeading) {
-      const rendered = originalHeading(token);
+      const rendered = originalHeading(text, level, raw, sluggerParam);
       if (rendered) {
         return rendered.replace(
           /^<h(\d)([^>]*)>/,
@@ -131,8 +129,8 @@ const renderMarkdownWithHeadings = (content: string) => {
         );
       }
     }
-    return `<h${depth} id="${id}">${plainText}</h${depth}>`;
-  } as typeof renderer.heading;
+    return `<h${level} id="${id}">${text}</h${level}>`;
+  };
 
   const html = marked.parse(content, { renderer }) as string;
   return { html, headings };
@@ -219,3 +217,4 @@ export const filterPosts = ({
     return matchesQuery && matchesCategory && matchesSubcategory && matchesTag;
   });
 };
+

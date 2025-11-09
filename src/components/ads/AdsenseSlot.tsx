@@ -1,4 +1,5 @@
-import { CSSProperties, useEffect, useId, useRef } from 'react';
+import type { CSSProperties } from 'react';
+import { useEffect, useId, useRef } from 'react';
 
 import { siteConfig } from '../../config/siteConfig';
 
@@ -8,8 +9,10 @@ declare global {
   }
 }
 
+type AdsenseSlotKey = keyof NonNullable<typeof siteConfig.adsense>['slots'];
+
 interface AdsenseSlotProps {
-  slotKey: keyof typeof siteConfig.adsense.slots;
+  slotKey: AdsenseSlotKey;
   className?: string;
   style?: CSSProperties;
 }
@@ -21,11 +24,12 @@ export const AdsenseSlot = ({
 }: AdsenseSlotProps) => {
   const id = useId();
   const insRef = useRef<HTMLModElement | null>(null);
-  const clientId = siteConfig.adsense.clientId;
-  const slot = siteConfig.adsense.slots[slotKey];
+  const adsense = siteConfig.adsense;
+  const clientId = adsense?.clientId;
+  const slot = adsense?.slots?.[slotKey];
 
   useEffect(() => {
-    if (!siteConfig.adsense.enabled || !clientId || !slot) {
+    if (!adsense?.enabled || !clientId || !slot) {
       return;
     }
 
@@ -45,9 +49,9 @@ export const AdsenseSlot = ({
     } catch (error) {
       console.warn('AdSense push error', error);
     }
-  }, [clientId, slot]);
+  }, [adsense, clientId, slot]);
 
-  if (!siteConfig.adsense.enabled || !clientId || !slot) {
+  if (!adsense?.enabled || !clientId || !slot) {
     return null;
   }
 
