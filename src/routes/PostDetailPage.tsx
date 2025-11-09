@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Navigate, NavLink, useParams } from 'react-router-dom';
 
 import { Breadcrumbs } from '../components/Breadcrumbs';
@@ -5,11 +6,27 @@ import { EmptyState } from '../components/EmptyState';
 import { GiscusWidget } from '../components/GiscusWidget';
 import { PostCard } from '../components/PostCard';
 import { PostMeta } from '../components/PostMeta';
+import { PostToc } from '../components/PostToc';
+import { useLayoutAside } from '../contexts/LayoutAsideContext';
 import { filterPosts, getPostBySlug } from '../lib/posts';
 
 export const PostDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const post = slug ? getPostBySlug(slug) : undefined;
+  const { setRightAside } = useLayoutAside();
+
+  useEffect(() => {
+    if (!post) {
+      setRightAside(null);
+      return;
+    }
+
+    setRightAside(
+      post.headings.length ? <PostToc headings={post.headings} /> : null
+    );
+
+    return () => setRightAside(null);
+  }, [post, setRightAside]);
 
   if (!post) {
     return <Navigate to="/not-found" replace />;

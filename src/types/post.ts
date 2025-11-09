@@ -1,5 +1,11 @@
 export type CategoryMap = Record<string, string[]>;
 
+export interface Heading {
+  id: string;
+  text: string;
+  level: number;
+}
+
 export interface PostFrontMatter {
   title: string;
   excerpt?: string;
@@ -18,4 +24,5 @@ export interface Post extends Omit<PostFrontMatter, 'tags'> {
   wordCount: number;
   isoDate: string;
   tags: string[];
+  headings: Heading[];
 }
