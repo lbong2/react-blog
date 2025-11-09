@@ -21,6 +21,12 @@ interface GiscusConfig {
   lang: string;
 }
 
+interface AdsenseConfig {
+  enabled: boolean;
+  clientId: string;
+  slots: Record<string, string>;
+}
+
 export interface SiteConfig {
   title: string;
   description: string;
@@ -34,6 +40,7 @@ export interface SiteConfig {
     placeholder: string;
   };
   githubPages: GithubPagesConfig;
+  adsense?: AdsenseConfig;
   giscus: GiscusConfig;
 }
 
@@ -48,7 +55,6 @@ export const siteConfig: SiteConfig = {
   navigation: [
     { label: 'Posts', path: '/' },
     { label: 'Tags', path: '/tags' },
-    { label: 'Categories', path: '/categories' },
   ],
   search: {
     placeholder: '검색어를 입력하세요...',

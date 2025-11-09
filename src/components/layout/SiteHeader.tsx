@@ -15,36 +15,26 @@ export const SiteHeader = () => {
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-6">
+      <div className="mx-auto flex h-16 w-full max-w-[1600px] items-center gap-8 px-8">
         <NavLink
           to="/"
           className="font-display text-xl font-semibold text-slate-900"
         >
           {siteConfig.title}
         </NavLink>
-        <nav className="hidden gap-6 lg:flex">
+        <nav className="hidden gap-8 lg:flex">
           {siteConfig.navigation.map((item) => (
             <NavLink key={item.path} to={item.path} className={navClass}>
               {item.label}
             </NavLink>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-3">
-          <div className="hidden w-64 md:block">
-            <SearchInput
-              value={query}
-              onChange={setQuery}
-              placeholder={siteConfig.search.placeholder}
-            />
-          </div>
-          <a
-            href={`https://github.com/${siteConfig.author.github}`}
-            target="_blank"
-            rel="noreferrer"
-            className="text-sm font-medium text-slate-500 transition hover:text-brand"
-          >
-            GitHub
-          </a>
+        <div className="ml-auto hidden w-[22rem] md:block">
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder={siteConfig.search.placeholder}
+          />
         </div>
       </div>
     </header>
